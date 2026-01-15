@@ -1233,7 +1233,7 @@ void CodeGenTileLangAscendPto::VisitStmt_(const AllocateNode *op) {
           for (size_t i = 0; i < op->extents.size(); i++) {
             stream << ", " << op->extents[i];
           }
-          stream << "> " << vid << ";/n";
+          stream << "> " << vid << ";\n";
           ub_data[3] = DEC_STR_TO_HEX_STR(PrintExpr(address_map_[op->buffer_var]));
           ub_data[4] = "Unapplied for tileUbDataDN";
           ub_data_map_[vid] = ub_data;
@@ -1360,7 +1360,7 @@ void CodeGenTileLangAscendPto::VisitStmt_(const AllocateNode *op) {
           for (size_t i = 0; i < op->extents.size(); i++) {
             stream << ", " << op->extents[i];
           }
-          stream << "> " << vid << ";/n";
+          stream << "> " << vid << ";\n";
           ub_data[3] = DEC_STR_TO_HEX_STR(PrintExpr(address_offset_[String(pos)]));
           ub_data[4] = "Unapplied for tileUbDataDN";
           ub_data_map_[vid] = ub_data;
