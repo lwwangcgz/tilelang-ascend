@@ -948,15 +948,36 @@ void CodeGenTileLangAscendPto::BinaryVecOpCodegen(const CallNode *op,
     auto var_name = PrintBufferOffset(op->args[i].as<CallNode>());
     var_names.push_back(var_name);
   }
-  this->PrintIndent();
-  this->stream << op_name << "(";
-  for (int i = 0; i < var_names.size(); i++) {
-    this->stream << var_names[i];
-    if (i != var_names.size() - 1) {
-      this->stream << ", ";
+
+  if (prefetch_n_stages_map_[var_names[1]].first > 0) {
+    auto buffer_k = op->args[1].as<CallNode>()->args[2] / op->args[1].as<CallNode>()->args[3];
+    tvm::arith::Analyzer analyzer;
+    PrimExpr simplified_buffer_k = analyzer.Simplify(buffer_k);
+    this->PrintIndent();
+    this->stream << op_name << "(";
+    for (int i = 0; i < var_names.size(); i++) {
+      this->stream << var_names[i];
+      if (i != 0) {
+        this->stream << "[" << simplified_buffer_k << "]";
+      }
+      if (i != var_names.size() - 1) {
+        this->stream << ", ";
+      }
     }
+    this->stream << ");\n";
+  } else if (prefetch_n_stages_map_[var_names[1]].first == 0) {
+    this->PrintIndent();
+    this->stream << op_name << "(";
+    for (int i = 0; i < var_names.size(); i++) {
+      this->stream << var_names[i];
+      if (i != var_names.size() - 1) {
+        this->stream << ", ";
+      }
+    }
+    this->stream << ");\n";
+  } else {
+    ICHECK(false) << "BinaryVecOpCodegen Failed";
   }
-  this->stream << ");\n";
 }
 
 void CodeGenTileLangAscendPto::BinaryVecOpsCodegen(const CallNode *op,
@@ -1208,14 +1229,11 @@ void CodeGenTileLangAscendPto::VisitStmt_(const AllocateNode *op) {
             stream << ", " << op->extents[0];
             stream << ", " << tvm::floordiv(op->extents[1] + NDBlockSize - 1, NDBlockSize) * NDBlockSize;
           }
-          stream << "> " << vid << "(";
+          // stream << "> " << vid << "(";
           for (size_t i = 0; i < op->extents.size(); i++) {
-              if (i < op->extents.size() - 1) {
-                  stream << op->extents[i] << ", ";
-              } else {
-                  stream << op->extents[i] << ");\n";
-              }
+            stream << op->extents[i] << ", ";
           }
+          stream << "> " << vid;
           ub_data[3] = DEC_STR_TO_HEX_STR(PrintExpr(address_map_[op->buffer_var]));
           ub_data[4] = "Unapplied for tileUbDataDN";
           ub_data_map_[vid] = ub_data;

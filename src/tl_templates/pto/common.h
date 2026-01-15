@@ -21,16 +21,16 @@ using TileMatL1ZN = Tile<TileType::Mat, T, Rows, Cols,
                        512, PadValue::Zero>;
 
 
-template <typename T, int Rows, int Cols>
+template <typename T, int Rows, int Cols, int RowValid = Rows, int ColValid = Cols>
 using TileUbDataND = Tile<TileType::Vec, T, Rows, Cols,
                        BLayout::RowMajor,
-                       -1, -1>;
+                       RowValid, ColValid>;
 
 
-template <typename T, int Rows, int Cols>
+template <typename T, int Rows, int Cols, int RowValid = Rows, int ColValid = Cols>
 using TileUbDataDN = Tile<TileType::Vec, T, Rows, Cols,
                        BLayout::ColMajor,
-                       -1, -1>;
+                       RowValid, ColValid>;
 
 
 // Valid
