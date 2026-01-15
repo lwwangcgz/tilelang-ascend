@@ -1357,14 +1357,10 @@ void CodeGenTileLangAscendPto::VisitStmt_(const AllocateNode *op) {
             stream << ", " << op->extents[0];
             stream << ", " << tvm::floordiv(op->extents[1] + NDBlockSize - 1, NDBlockSize) * NDBlockSize;
           }
-          stream << "> " << vid << "(";
           for (size_t i = 0; i < op->extents.size(); i++) {
-              if (i < op->extents.size() - 1) {
-                  stream << op->extents[i] << ", ";
-              } else {
-                  stream << op->extents[i] << ");\n";
-              }
+            stream << op->extents[i] << ", ";
           }
+          stream << "> " << vid;
           ub_data[3] = DEC_STR_TO_HEX_STR(PrintExpr(address_offset_[String(pos)]));
           ub_data[4] = "Unapplied for tileUbDataDN";
           ub_data_map_[vid] = ub_data;
