@@ -1231,9 +1231,9 @@ void CodeGenTileLangAscendPto::VisitStmt_(const AllocateNode *op) {
           }
           // stream << "> " << vid << "(";
           for (size_t i = 0; i < op->extents.size(); i++) {
-            stream << op->extents[i] << ", ";
+            stream << ", " << op->extents[i];
           }
-          stream << "> " << vid;
+          stream << "> " << vid << ";/n";
           ub_data[3] = DEC_STR_TO_HEX_STR(PrintExpr(address_map_[op->buffer_var]));
           ub_data[4] = "Unapplied for tileUbDataDN";
           ub_data_map_[vid] = ub_data;
@@ -1243,7 +1243,7 @@ void CodeGenTileLangAscendPto::VisitStmt_(const AllocateNode *op) {
         } else if (op->extents.size() == 1) {
           ub_data[1] = "1";
           ub_data[2] = PrintExpr(op->extents[0]);
-          stream << pos << "ND<" << type << ", 1, " << op->extents[0] << "> " << vid << "(" << "1, " << op->extents[0] << ");\n";
+          stream << pos << "ND<" << type << ", 1, " << op->extents[0] << ", 1, " << op->extents[0]<< "> " << vid << ";\n";
           ub_data[3] = DEC_STR_TO_HEX_STR(PrintExpr(address_map_[op->buffer_var]));
           ub_data[4] = "Unapplied for tileUbDataDN";
           ub_data_map_[vid] = ub_data;
@@ -1358,9 +1358,9 @@ void CodeGenTileLangAscendPto::VisitStmt_(const AllocateNode *op) {
             stream << ", " << tvm::floordiv(op->extents[1] + NDBlockSize - 1, NDBlockSize) * NDBlockSize;
           }
           for (size_t i = 0; i < op->extents.size(); i++) {
-            stream << op->extents[i] << ", ";
+            stream << ", " << op->extents[i];
           }
-          stream << "> " << vid;
+          stream << "> " << vid << ";/n";
           ub_data[3] = DEC_STR_TO_HEX_STR(PrintExpr(address_offset_[String(pos)]));
           ub_data[4] = "Unapplied for tileUbDataDN";
           ub_data_map_[vid] = ub_data;
@@ -1373,7 +1373,7 @@ void CodeGenTileLangAscendPto::VisitStmt_(const AllocateNode *op) {
         } else if (op->extents.size() == 1) {
           ub_data[1] = "1";
           ub_data[2] = PrintExpr(op->extents[0]);
-          stream << pos << "ND<" << type << ", 1, " << op->extents[0] << "> " << vid << "(" << "1, " << op->extents[0] << ");\n";
+          stream << pos << "ND<" << type << ", 1, " << op->extents[0] << ", 1, " << op->extents[0]<< "> " << vid << ";\n";
           ub_data[3] = DEC_STR_TO_HEX_STR(PrintExpr(address_offset_[String(pos)]));
           ub_data[4] = "Unapplied for tileUbDataDN";
           ub_data_map_[vid] = ub_data;
