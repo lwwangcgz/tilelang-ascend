@@ -1268,14 +1268,10 @@ void CodeGenTileLangAscendPto::VisitStmt_(const AllocateNode *op) {
             stream << ", " << op->extents[0];
             stream << ", " << tvm::floordiv(op->extents[1] + NDBlockSize - 1, NDBlockSize) * NDBlockSize;
           }
-          stream << "> " << vid << "[" << op->extents[0] << "](";
           for (size_t i = 1; i < op->extents.size(); i++) {
-              if (i < op->extents.size() - 1) {
-                  stream << op->extents[i] << ", ";
-              } else {
-                  stream << op->extents[i] << ");\n";
-              }
+            stream << ", " << op->extents[i];
           }
+          stream << "> " << vid << "[" << op->extents[0] << "];\n";
           for (size_t i = 0; i < bufferNum; i++) {
             this->PrintIndent();
             stream << "TASSIGN(" << vid << "[" << i << "], " << DEC_STR_TO_HEX_STR(PrintExpr(address_map_[op->buffer_var])) << ");\n";
@@ -1403,14 +1399,10 @@ void CodeGenTileLangAscendPto::VisitStmt_(const AllocateNode *op) {
             stream << ", " << op->extents[0];
             stream << ", " << tvm::floordiv(op->extents[1] + NDBlockSize - 1, NDBlockSize) * NDBlockSize;
           }
-          stream << "> " << vid << "[" << op->extents[0] << "](";
           for (size_t i = 1; i < op->extents.size(); i++) {
-              if (i < op->extents.size() - 1) {
-                  stream << op->extents[i] << ", ";
-              } else {
-                  stream << op->extents[i] << ");\n";
-              }
+            stream << ", " << op->extents[i];
           }
+          stream << "> " << vid << "[" << op->extents[0] << "];\n";
           for (size_t j = 0; j < bufferNum; j++) {
             this->PrintIndent();
             stream << "TASSIGN(" << vid << "[" << j << "], " << DEC_STR_TO_HEX_STR(PrintExpr(address_offset_[String(pos)])) << ");\n";
