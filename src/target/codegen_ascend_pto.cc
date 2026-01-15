@@ -1079,7 +1079,7 @@ void CodeGenTileLangAscendPto::ReduceOpCodegen(const CallNode *op) {
   ICHECK(ub_data_vector.size() == 5) << "TileUbData needs 5 elements (type, row, col, ffts, applied DN or not), got " << ub_data_vector.size() << ".";
   if (ub_data_vector[4] == "Unapplied for tileUbDataDN") {
     this->PrintIndent();
-    this->stream << kAscendPtoScope << "TileUbDataDN <" << ub_data_type << ", " << row << ", " << col << "> " << ub_name << "_DN(" << row << ", " << col << ");\n";
+    this->stream << kAscendPtoScope << "TileUbDataDN <" << ub_data_type << ", " << row << ", " << col << ", " << row << ", " << col << "> " << ub_name << "_DN;\n";
     this->PrintIndent();
     this->stream << "TASSIGN(" << ub_name << "_DN, " << ffts << ");\n";
     this->PrintIndent();
