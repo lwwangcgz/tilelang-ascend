@@ -190,7 +190,11 @@ AICORE PTO_INLINE void copy_ub_to_gm(
     TSTORE(global_tensor, ub);
 }
 
-template <typename T1, typename T2, typename T3, int32_t rows_src, int32_t cols_src, int32_t validRow_src, int32_t validCol_src, int32_t cols_dst, int32_t row_tmp, int32_t col_tmp>
+template <typename T1, typename T2, typename T3, 
+        int32_t rows_src, int32_t cols_src, 
+        int32_t validRow_src, int32_t validCol_src, 
+        int32_t cols_dst, 
+        int32_t row_tmp, int32_t col_tmp>
 AICORE PTO_INLINE void TROWMAX_with_slice_buffer(
         uint64_t handle_src, 
         uint64_t handle_dst, 
@@ -201,7 +205,11 @@ AICORE PTO_INLINE void TROWMAX_with_slice_buffer(
     TROWMAX(ub_DN, tileUbWithValid, tmp_ub);
 }
 
-template <typename T1, typename T2, typename T3, int32_t rows_src, int32_t cols_src, int32_t validRow_src, int32_t validCol_src, int32_t cols_dst, int32_t row_tmp, int32_t col_tmp>
+template <typename T1, typename T2, typename T3, 
+        int32_t rows_src, int32_t cols_src, 
+        int32_t validRow_src, int32_t validCol_src, 
+        int32_t cols_dst, 
+        int32_t row_tmp, int32_t col_tmp>
 AICORE PTO_INLINE void TROWSUM_with_slice_buffer(
         uint64_t handle_src, 
         uint64_t handle_dst, 
