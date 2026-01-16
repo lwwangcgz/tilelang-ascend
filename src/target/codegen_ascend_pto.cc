@@ -1057,6 +1057,16 @@ void CodeGenTileLangAscendPto::ScalarOpCodegen(const CallNode *op, const std::st
 
 void CodeGenTileLangAscendPto::ReduceOpCodegen(const CallNode *op) {
   std::string op_name = Downcast<StringImm>(op->args[0])->value;
+
+  //Determine whether the reduce operation needs to be sliced.
+  auto template_params = ExtractTemplateParams(op_name);
+  int param2 = std::get<0>(template_params);
+  int param3 = std::get<1>(template_params);
+  bool success = std::get<2>(template_params);
+  if (!success) {
+    ICHECK(false) << "ExtractTemplateParams failed";
+  }
+
   if (op_name.find("reduce_sum") != std::string::npos) {
     op_name = "TROWSUM";
   } else if (op_name.find("reduce_max") != std::string::npos) {
@@ -1076,8 +1086,16 @@ void CodeGenTileLangAscendPto::ReduceOpCodegen(const CallNode *op) {
   std::string row = ub_data_vector[2];
   std::string col = ub_data_vector[1];
   std::string ffts = ub_data_vector[3];
+
+  if (param2 != row || param3 != col) {
+    this->PrintIndent();
+    this->stream << kAscendPtoScope << "slice_buffer_with_valid <" << ub_data_type << ", " << row << ", " << col << ", " << validRow << ", " << validCol << "> (" << ffts <<");\n";
+    ub_name = "tileUbWithValid";
+  }
+  
+  // Determine whether to request the TileUbData with DN arrangement.
   ICHECK(ub_data_vector.size() == 5) << "TileUbData needs 5 elements (type, row, col, ffts, applied DN or not), got " << ub_data_vector.size() << ".";
-  if (ub_data_vector[4] == "Unapplied for tileUbDataDN") {
+  if (ub_data_vector[4] == "Unapplied for tileUbDataDN") { //If not applied yet, prioritize applying for it.
     this->PrintIndent();
     this->stream << kAscendPtoScope << "TileUbDataDN <" << ub_data_type << ", " << row << ", " << col << ", " << row << ", " << col << "> " << ub_name << "_DN;\n";
     this->PrintIndent();
@@ -1099,7 +1117,7 @@ void CodeGenTileLangAscendPto::ReduceOpCodegen(const CallNode *op) {
     this->PrintIndent();
     this->stream << "TRESHAPE(" << var_names[0] << ", " << var_names[0] << "_DN);\n";
     ub_data_vector[4] = "Applied for tileUbDataDN";
-  } else if (ub_data_vector[4] == "Applied for tileUbDataDN") {
+  } else if (ub_data_vector[4] == "Applied for tileUbDataDN") { //If already applied, leverage the existing application.
     this->PrintIndent();
     this->stream << op_name << "(";
     for (int i = 0; i < var_names.size(); i++) {
@@ -1173,6 +1191,74 @@ void CodeGenTileLangAscendPto::VisitStmt_(const AttrStmtNode *op) {
     return;
   }
   CodeGenC::VisitStmt_(op);
+}
+
+std::tuple<int, int, bool> ExtractTemplateParams(const std::string& op_name) {
+    int param2 = 0;
+    int param3 = 0;
+    bool success = false;
+    
+    // 1. 找到尖括号位置
+    size_t start = op_name.find('<');
+    size_t end = op_name.find('>');
+    
+    // 如果没有尖括号，直接返回失败
+    if (start == std::string::npos || end == std::string::npos || start >= end) {
+        return std::make_tuple(param2, param3, success);
+    }
+    
+    // 2. 提取尖括号内的内容
+    std::string inner = op_name.substr(start + 1, end - start - 1);
+    
+    // 3. 解析逗号分隔的参数
+    int param_index = 0;
+    size_t pos = 0;
+    
+    while (pos < inner.length()) {
+        // 跳过空格
+        while (pos < inner.length() && (inner[pos] == ' ' || inner[pos] == '\t')) {
+            pos++;
+        }
+        
+        if (pos >= inner.length()) break;
+        
+        // 找到参数结束位置（逗号或字符串结尾）
+        size_t end_pos = pos;
+        while (end_pos < inner.length() && inner[end_pos] != ',') {
+            end_pos++;
+        }
+        
+        // 提取当前参数
+        std::string param = inner.substr(pos, end_pos - pos);
+        
+        // 去除首尾空格
+        size_t first = param.find_first_not_of(" \t");
+        size_t last = param.find_last_not_of(" \t");
+        if (first != std::string::npos && last != std::string::npos) {
+            param = param.substr(first, last - first + 1);
+        }
+        
+        // 根据参数索引处理
+        if (param_index == 2) {  // 第3个参数（索引2）
+            char* endptr;
+            long value = std::strtol(param.c_str(), &endptr, 10);
+            if (endptr != param.c_str()) {  // 转换成功
+                param2 = static_cast<int>(value);
+            }
+        } else if (param_index == 3) {  // 第4个参数（索引3）
+            char* endptr;
+            long value = std::strtol(param.c_str(), &endptr, 10);
+            if (endptr != param.c_str()) {  // 转换成功
+                param3 = static_cast<int>(value);
+                success = true;  // 至少成功获取了第4个参数
+            }
+        }
+        
+        param_index++;
+        pos = (end_pos < inner.length()) ? end_pos + 1 : inner.length();
+    }
+    
+    return std::make_tuple(param2, param3, success);
 }
 
 void UbShapeInputCheck(const AllocateNode *op) {

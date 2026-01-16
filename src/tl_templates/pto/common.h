@@ -189,4 +189,10 @@ AICORE PTO_INLINE void copy_ub_to_gm(
     pto::Stride<stride1, stride2, stride3, stride4, stride5>> global_tensor(handle);
     TSTORE(global_tensor, ub);
 }
+
+template <typename T1, int32_t rows, int32_t cols, int32_t validRow, int32_t validCol>
+AICORE PTO_INLINE void slice_buffer_with_valid(__gm__ T1 *handle) {
+    TileUbDataND<T1, rows, cols, validRow, validCol> tileUbWithValid;
+    TASSIGN(tileUbWithValid, handle);
+}
 }
