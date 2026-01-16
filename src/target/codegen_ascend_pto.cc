@@ -1160,13 +1160,15 @@ void CodeGenTileLangAscendPto::ReduceOpCodegen(const CallNode *op) {
   // std::cout<<col_src<<std::endl;
   std::string ffts_src = ub_data_vector_src[3];
 
+  std::string tmp_ub = var_names[3];
+
   if (param2 != row_src || param3 != col_src) {
     if (op_name == "TROWMAX") {
       this->PrintIndent();
-      this->stream << kAscendPtoScope << "TROWMAX_with_slice_buffer <" << ub_data_type_src << ", "<< ub_data_type << ", " << row_src << ", " << col_src << ", " << param2 << ", " << param3 << ", " << col << "> (" << ffts_src << ", " << ffts << ", " << ub_name <<");\n";
+      this->stream << kAscendPtoScope << "TROWMAX_with_slice_buffer <" << ub_data_type_src << ", "<< ub_data_type << ", " << row_src << ", " << col_src << ", " << param2 << ", " << param3 << ", " << col << "> (" << ffts_src << ", " << ffts << ", " << ub_name << ", " << tmp_ub <<");\n";
     } else if (op_name == "TROWSUM") {
       this->PrintIndent();
-      this->stream << kAscendPtoScope << "TROWSUM_with_slice_buffer <" << ub_data_type_src << ", "<< ub_data_type << ", " << row_src << ", " << col_src << ", " << param2 << ", " << param3 << ", " << col << "> (" << ffts_src << ", " << ffts << ", " << ub_name <<");\n";
+      this->stream << kAscendPtoScope << "TROWSUM_with_slice_buffer <" << ub_data_type_src << ", "<< ub_data_type << ", " << row_src << ", " << col_src << ", " << param2 << ", " << param3 << ", " << col << "> (" << ffts_src << ", " << ffts << ", " << ub_name << ", " << tmp_ub <<");\n";
     } else {
       ICHECK(false) << "Not support reduce type in slice buffer operation.";
     }
