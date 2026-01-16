@@ -1056,71 +1056,58 @@ void CodeGenTileLangAscendPto::ScalarOpCodegen(const CallNode *op, const std::st
 }
 
 std::tuple<int, int, bool> ExtractTemplateParams(const std::string& op_name) {
-    int param2 = 0;
-    int param3 = 0;
-    bool success = false;
+    // 默认值
+    int second_param = 0;  // 第2个参数（8）
+    int third_param = 0;   // 第3个参数（64）
     
-    // 1. 找到尖括号位置
-    size_t start = op_name.find('<');
-    size_t end = op_name.find('>');
+    // 找到尖括号内容
+    size_t left = op_name.find('<');
+    size_t right = op_name.find('>');
     
-    // 如果没有尖括号，直接返回失败
-    if (start == std::string::npos || end == std::string::npos || start >= end) {
-        return std::make_tuple(param2, param3, success);
+    if (left == std::string::npos || right == std::string::npos || left >= right) {
+        return std::make_tuple(second_param, third_param, false);
     }
     
-    // 2. 提取尖括号内的内容
-    std::string inner = op_name.substr(start + 1, end - start - 1);
+    // 提取并分割参数
+    std::string params_str = op_name.substr(left + 1, right - left - 1);
+    std::vector<std::string> params;
     
-    // 3. 解析逗号分隔的参数
-    int param_index = 0;
-    size_t pos = 0;
-    
-    while (pos < inner.length()) {
-        // 跳过空格
-        while (pos < inner.length() && (inner[pos] == ' ' || inner[pos] == '\t')) {
-            pos++;
-        }
-        
-        if (pos >= inner.length()) break;
-        
-        // 找到参数结束位置（逗号或字符串结尾）
-        size_t end_pos = pos;
-        while (end_pos < inner.length() && inner[end_pos] != ',') {
-            end_pos++;
-        }
-        
-        // 提取当前参数
-        std::string param = inner.substr(pos, end_pos - pos);
-        
-        // 去除首尾空格
-        size_t first = param.find_first_not_of(" \t");
-        size_t last = param.find_last_not_of(" \t");
-        if (first != std::string::npos && last != std::string::npos) {
-            param = param.substr(first, last - first + 1);
-        }
-        
-        // 根据参数索引处理
-        if (param_index == 2) {  // 第3个参数（索引2）
-            char* endptr;
-            long value = std::strtol(param.c_str(), &endptr, 10);
-            if (endptr != param.c_str()) {  // 转换成功
-                param2 = static_cast<int>(value);
-            }
-        } else if (param_index == 3) {  // 第4个参数（索引3）
-            char* endptr;
-            long value = std::strtol(param.c_str(), &endptr, 10);
-            if (endptr != param.c_str()) {  // 转换成功
-                param3 = static_cast<int>(value);
-                success = true;  // 至少成功获取了第4个参数
-            }
-        }
-        
-        param_index++;
-        pos = (end_pos < inner.length()) ? end_pos + 1 : inner.length();
+    size_t start = 0;
+    size_t comma = 0;
+    while ((comma = params_str.find(',', start)) != std::string::npos) {
+        std::string param = params_str.substr(start, comma - start);
+        // 去除空格
+        param.erase(0, param.find_first_not_of(" \t"));
+        param.erase(param.find_last_not_of(" \t") + 1);
+        params.push_back(param);
+        start = comma + 1;
     }
     
-    return std::make_tuple(param2, param3, success);
+    // 最后一个参数
+    std::string last_param = params_str.substr(start);
+    last_param.erase(0, last_param.find_first_not_of(" \t"));
+    last_param.erase(last_param.find_last_not_of(" \t") + 1);
+    params.push_back(last_param);
+    
+    // 检查参数数量并提取
+    if (params.size() >= 3) {  // 至少要有3个参数（float, 8, 64）
+        try {
+            // params[0] 是 "float"（类型）
+            // params[1] 是 "8"（第2个参数）
+            // params[2] 是 "64"（第3个参数）
+            // params[3] 是 "-1"（第4个参数，如果有的话）
+            
+            second_param = std::stoi(params[1]);  // 8
+            third_param = std::stoi(params[2]);   // 64
+            
+            return std::make_tuple(second_param, third_param, true);
+        } catch (const std::exception& e) {
+            // 转换失败
+            return std::make_tuple(second_param, third_param, false);
+        }
+    }
+    
+    return std::make_tuple(second_param, third_param, false);
 }
 
 void CodeGenTileLangAscendPto::ReduceOpCodegen(const CallNode *op) {
