@@ -1062,6 +1062,8 @@ void CodeGenTileLangAscendPto::ReduceOpCodegen(const CallNode *op) {
   auto template_params = ExtractTemplateParams(op_name);
   int param2 = std::get<0>(template_params);
   int param3 = std::get<1>(template_params);
+  std::string param2 = std::to_string(param2);
+  std::string param3 = std::to_string(param3);
   bool success = std::get<2>(template_params);
   if (!success) {
     ICHECK(false) << "ExtractTemplateParams failed";
@@ -1089,7 +1091,7 @@ void CodeGenTileLangAscendPto::ReduceOpCodegen(const CallNode *op) {
 
   if (param2 != row || param3 != col) {
     this->PrintIndent();
-    this->stream << kAscendPtoScope << "slice_buffer_with_valid <" << ub_data_type << ", " << row << ", " << col << ", " << validRow << ", " << validCol << "> (" << ffts <<");\n";
+    this->stream << kAscendPtoScope << "slice_buffer_with_valid <" << ub_data_type << ", " << row << ", " << col << ", " << param2 << ", " << param3 << "> (" << ffts <<");\n";
     ub_name = "tileUbWithValid";
   }
   
