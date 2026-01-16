@@ -190,9 +190,27 @@ AICORE PTO_INLINE void copy_ub_to_gm(
     TSTORE(global_tensor, ub);
 }
 
-template <typename T1, int32_t rows, int32_t cols, int32_t validRow, int32_t validCol>
-AICORE PTO_INLINE void slice_buffer_with_valid(uint64_t handle) {
-    TileUbDataND<T1, rows, cols, validRow, validCol> tileUbWithValid;
-    TASSIGN(tileUbWithValid, handle);
+template <typename T1, typename T2, int32_t rows_src, int32_t cols_src, int32_t validRow_src, int32_t validCol_src, int32_t cols_dst>
+AICORE PTO_INLINE void TROWMAX_with_slice_buffer(uint64_t handle_src, uint64_t handle_dst, TileUbDataND<T2, 1, cols_dst, 1, cols_dst> &ub) {
+    tl::ascend_pto::TileUbDataND <T1, rows_src, cols_src, validRow_src, validCol_src> tileUbWithValid;
+    TASSIGN(tileUbWithValid, handle_src);
+    tl::ascend_pto::TileUbDataDN <T2, cols_dst, 1, cols_dst, 1> ub_DN;
+    TASSIGN(ub_DN, handle_dst);
+    TROWMAX(ub_DN, tileUbWithValid, tmp_ub);
+    pipe_barrier<PIPE_ALL>;
+    TRESHAPE(ub, ub_DN);
+    pipe_barrier<PIPE_ALL>;
+}
+
+template <typename T1, typename T2, int32_t rows_src, int32_t cols_src, int32_t validRow_src, int32_t validCol_src, int32_t cols_dst>
+AICORE PTO_INLINE void TROWSUM_with_slice_buffer(uint64_t handle_src, uint64_t handle_dst, TileUbDataND<T2, 1, cols_dst, 1, cols_dst> &ub) {
+    tl::ascend_pto::TileUbDataND <T1, rows_src, cols_src, validRow_src, validCol_src> tileUbWithValid;
+    TASSIGN(tileUbWithValid, handle_src);
+    tl::ascend_pto::TileUbDataDN <T2, cols_dst, 1, cols_dst, 1> ub_DN;
+    TASSIGN(ub_DN, handle_dst);
+    TROWSUM(ub_DN, tileUbWithValid, tmp_ub);
+    pipe_barrier<PIPE_ALL>;
+    TRESHAPE(ub, ub_DN);
+    pipe_barrier<PIPE_ALL>;
 }
 }

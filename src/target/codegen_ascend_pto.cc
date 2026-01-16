@@ -1153,6 +1153,7 @@ void CodeGenTileLangAscendPto::ReduceOpCodegen(const CallNode *op) {
   std::string ub_name_src = var_names[1];
   // std::cout<<ub_name_src<<std::endl;
   std::vector<std::string> ub_data_vector_src = ub_data_map_[ub_name_src];
+  std::string ub_data_type_src = ub_data_vector_src[0];
   std::string row_src = ub_data_vector_src[1];
   // std::cout<<row_src<<std::endl;
   std::string col_src = ub_data_vector_src[2];
@@ -1160,54 +1161,60 @@ void CodeGenTileLangAscendPto::ReduceOpCodegen(const CallNode *op) {
   std::string ffts_src = ub_data_vector_src[3];
 
   if (param2 != row_src || param3 != col_src) {
-    this->PrintIndent();
-    this->stream << kAscendPtoScope << "slice_buffer_with_valid <" << ub_data_type << ", " << row_src << ", " << col_src << ", " << param2 << ", " << param3 << "> (" << ffts <<");\n";
-    var_names[1] = "tileUbWithValid";
-  }
-  
-  // Determine whether to request the TileUbData with DN arrangement.
-  ICHECK(ub_data_vector.size() == 5) << "TileUbData needs 5 elements (type, row, col, ffts, applied DN or not), got " << ub_data_vector.size() << ".";
-  if (ub_data_vector[4] == "Unapplied for tileUbDataDN") { //If not applied yet, prioritize applying for it.
-    this->PrintIndent();
-    this->stream << kAscendPtoScope << "TileUbDataDN <" << ub_data_type << ", " << row << ", " << col << ", " << row << ", " << col << "> " << ub_name << "_DN;\n";
-    this->PrintIndent();
-    this->stream << "TASSIGN(" << ub_name << "_DN, " << ffts << ");\n";
-    this->PrintIndent();
-    this->stream << op_name << "(";
-    for (int i = 0; i < var_names.size(); i++) {
-      this->stream << var_names[i];
-      if (i == 0) {
-        this->stream << "_DN";
-      }
-      if (i != var_names.size() - 1) {
-        this->stream << ", ";
-      }
+    if (op_name == "TROWMAX") {
+      this->PrintIndent();
+      this->stream << kAscendPtoScope << "TROWMAX_with_slice_buffer <" << ub_data_type_src << ", "<< ub_data_type << ", " << row_src << ", " << col_src << ", " << param2 << ", " << param3 << ", " << col << "> (" << ffts_src << ", " << ffts << ", " << ub_name <<");\n";
+    } else if (op_name == "TROWSUM") {
+      this->PrintIndent();
+      this->stream << kAscendPtoScope << "TROWSUM_with_slice_buffer <" << ub_data_type_src << ", "<< ub_data_type << ", " << row_src << ", " << col_src << ", " << param2 << ", " << param3 << ", " << col << "> (" << ffts_src << ", " << ffts << ", " << ub_name <<");\n";
+    } else {
+      ICHECK(false) << "Not support reduce type in slice buffer operation."
     }
-    this->stream << ");\n";
-    this->PrintIndent();
-    this->stream << "pipe_barrier(PIPE_ALL);\n";
-    this->PrintIndent();
-    this->stream << "TRESHAPE(" << var_names[0] << ", " << var_names[0] << "_DN);\n";
-    ub_data_vector[4] = "Applied for tileUbDataDN";
-  } else if (ub_data_vector[4] == "Applied for tileUbDataDN") { //If already applied, leverage the existing application.
-    this->PrintIndent();
-    this->stream << op_name << "(";
-    for (int i = 0; i < var_names.size(); i++) {
-      this->stream << var_names[i];
-      if (i == 0) {
-        this->stream << "_DN";
-      }
-      if (i != var_names.size() - 1) {
-        this->stream << ", ";
-      }
-    }
-    this->stream << ");\n";
-    this->PrintIndent();
-    this->stream << "pipe_barrier(PIPE_ALL);\n";
-    this->PrintIndent();
-    this->stream << "TRESHAPE(" << var_names[0] << ", " << var_names[0] << "_DN);\n";
   } else {
-    ICHECK(false) << "Error route in ReduceOpCodegen";
+    // Determine whether to request the TileUbData with DN arrangement.
+    ICHECK(ub_data_vector.size() == 5) << "TileUbData needs 5 elements (type, row, col, ffts, applied DN or not), got " << ub_data_vector.size() << ".";
+    if (ub_data_vector[4] == "Unapplied for tileUbDataDN") { //If not applied yet, prioritize applying for it.
+      this->PrintIndent();
+      this->stream << kAscendPtoScope << "TileUbDataDN <" << ub_data_type << ", " << row << ", " << col << ", " << row << ", " << col << "> " << ub_name << "_DN;\n";
+      this->PrintIndent();
+      this->stream << "TASSIGN(" << ub_name << "_DN, " << ffts << ");\n";
+      this->PrintIndent();
+      this->stream << op_name << "(";
+      for (int i = 0; i < var_names.size(); i++) {
+        this->stream << var_names[i];
+        if (i == 0) {
+          this->stream << "_DN";
+        }
+        if (i != var_names.size() - 1) {
+          this->stream << ", ";
+        }
+      }
+      this->stream << ");\n";
+      this->PrintIndent();
+      this->stream << "pipe_barrier(PIPE_ALL);\n";
+      this->PrintIndent();
+      this->stream << "TRESHAPE(" << var_names[0] << ", " << var_names[0] << "_DN);\n";
+      ub_data_vector[4] = "Applied for tileUbDataDN";
+    } else if (ub_data_vector[4] == "Applied for tileUbDataDN") { //If already applied, leverage the existing application.
+      this->PrintIndent();
+      this->stream << op_name << "(";
+      for (int i = 0; i < var_names.size(); i++) {
+        this->stream << var_names[i];
+        if (i == 0) {
+          this->stream << "_DN";
+        }
+        if (i != var_names.size() - 1) {
+          this->stream << ", ";
+        }
+      }
+      this->stream << ");\n";
+      this->PrintIndent();
+      this->stream << "pipe_barrier(PIPE_ALL);\n";
+      this->PrintIndent();
+      this->stream << "TRESHAPE(" << var_names[0] << ", " << var_names[0] << "_DN);\n";
+    } else {
+      ICHECK(false) << "Error route in ReduceOpCodegen";
+    }
   }
 }
 
