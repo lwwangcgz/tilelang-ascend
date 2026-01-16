@@ -1160,7 +1160,7 @@ void CodeGenTileLangAscendPto::ReduceOpCodegen(const CallNode *op) {
   // std::cout<<col_src<<std::endl;
   std::string ffts_src = ub_data_vector_src[3];
 
-  std::string ub_name_tmp = var_names[3];
+  std::string ub_name_tmp = var_names[2];
   std::vector<std::string> ub_data_vector_tmp = ub_data_map_[ub_name_tmp];
   std::string ub_data_type_tmp = ub_data_vector_tmp[0];
   std::string row_tmp = ub_data_vector_tmp[1];
