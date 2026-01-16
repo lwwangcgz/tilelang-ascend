@@ -1119,8 +1119,8 @@ void CodeGenTileLangAscendPto::ReduceOpCodegen(const CallNode *op) {
   int param3_int = std::get<1>(template_params);
   std::string param2 = std::to_string(param2_int);
   std::string param3 = std::to_string(param3_int);
-  std::cout<<param2<<std::endl;
-  std::cout<<param3<<std::endl;
+  // std::cout<<param2<<std::endl;
+  // std::cout<<param3<<std::endl;
   bool success = std::get<2>(template_params);
   if (!success) {
     ICHECK(false) << "ExtractTemplateParams failed";
@@ -1139,24 +1139,24 @@ void CodeGenTileLangAscendPto::ReduceOpCodegen(const CallNode *op) {
     auto var_name = PrintBufferOffset(op->args[i].as<CallNode>());
     var_names.push_back(var_name);
   }
-  std::cout<<"reduceOpCodegen:"<<std::endl;
+  // std::cout<<"reduceOpCodegen:"<<std::endl;
   std::string ub_name = var_names[0];
-  std::cout<<ub_name<<std::endl;
+  // std::cout<<ub_name<<std::endl;
   std::vector<std::string> ub_data_vector = ub_data_map_[ub_name];
   std::string ub_data_type = ub_data_vector[0];
   std::string row = ub_data_vector[2];
-  std::cout<<row<<std::endl;
+  // std::cout<<row<<std::endl;
   std::string col = ub_data_vector[1];
-  std::cout<<col<<std::endl;
+  // std::cout<<col<<std::endl;
   std::string ffts = ub_data_vector[3];
 
   std::string ub_name_src = var_names[1];
-  std::cout<<ub_name_src<<std::endl;
+  // std::cout<<ub_name_src<<std::endl;
   std::vector<std::string> ub_data_vector_src = ub_data_map_[ub_name_src];
   std::string row_src = ub_data_vector_src[1];
-  std::cout<<row_src<<std::endl;
+  // std::cout<<row_src<<std::endl;
   std::string col_src = ub_data_vector_src[2];
-  std::cout<<col_src<<std::endl;
+  // std::cout<<col_src<<std::endl;
   std::string ffts_src = ub_data_vector_src[3];
 
   if (param2 != row_src || param3 != col_src) {
@@ -1568,11 +1568,11 @@ void CodeGenTileLangAscendPto::VisitStmt_(const AllocateNode *op) {
       }
     }
 
-    std::cout<<"visitstmt:"<<std::endl;
+    // std::cout<<"visitstmt:"<<std::endl;
     for(auto c:ub_data){
-      std::cout<<c<<", ";
+      // std::cout<<c<<", ";
     }
-    std::cout<<std::endl;
+    // std::cout<<std::endl;
   };
 
   if (scope == "wmma.matrix_a") {
