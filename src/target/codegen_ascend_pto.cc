@@ -1153,11 +1153,11 @@ void CodeGenTileLangAscendPto::ReduceOpCodegen(const CallNode *op) {
   std::string ub_name_src = var_names[1];
   std::cout<<ub_name_src<<std::endl;
   std::vector<std::string> ub_data_vector_src = ub_data_map_[ub_name_src];
-  std::string row_src = ub_data_vector[1];
+  std::string row_src = ub_data_vector_src[1];
   std::cout<<row_src<<std::endl;
-  std::string col_src = ub_data_vector[2];
+  std::string col_src = ub_data_vector_src[2];
   std::cout<<col_src<<std::endl;
-  std::string ffts_src = ub_data_vector[3];
+  std::string ffts_src = ub_data_vector_src[3];
 
   if (param2 != row_src || param3 != col_src) {
     this->PrintIndent();
@@ -1264,74 +1264,6 @@ void CodeGenTileLangAscendPto::VisitStmt_(const AttrStmtNode *op) {
   }
   CodeGenC::VisitStmt_(op);
 }
-
-// std::tuple<int, int, bool> ExtractTemplateParams(const std::string& op_name) {
-//     int param2 = 0;
-//     int param3 = 0;
-//     bool success = false;
-    
-//     // 1. 找到尖括号位置
-//     size_t start = op_name.find('<');
-//     size_t end = op_name.find('>');
-    
-//     // 如果没有尖括号，直接返回失败
-//     if (start == std::string::npos || end == std::string::npos || start >= end) {
-//         return std::make_tuple(param2, param3, success);
-//     }
-    
-//     // 2. 提取尖括号内的内容
-//     std::string inner = op_name.substr(start + 1, end - start - 1);
-    
-//     // 3. 解析逗号分隔的参数
-//     int param_index = 0;
-//     size_t pos = 0;
-    
-//     while (pos < inner.length()) {
-//         // 跳过空格
-//         while (pos < inner.length() && (inner[pos] == ' ' || inner[pos] == '\t')) {
-//             pos++;
-//         }
-        
-//         if (pos >= inner.length()) break;
-        
-//         // 找到参数结束位置（逗号或字符串结尾）
-//         size_t end_pos = pos;
-//         while (end_pos < inner.length() && inner[end_pos] != ',') {
-//             end_pos++;
-//         }
-        
-//         // 提取当前参数
-//         std::string param = inner.substr(pos, end_pos - pos);
-        
-//         // 去除首尾空格
-//         size_t first = param.find_first_not_of(" \t");
-//         size_t last = param.find_last_not_of(" \t");
-//         if (first != std::string::npos && last != std::string::npos) {
-//             param = param.substr(first, last - first + 1);
-//         }
-        
-//         // 根据参数索引处理
-//         if (param_index == 2) {  // 第3个参数（索引2）
-//             char* endptr;
-//             long value = std::strtol(param.c_str(), &endptr, 10);
-//             if (endptr != param.c_str()) {  // 转换成功
-//                 param2 = static_cast<int>(value);
-//             }
-//         } else if (param_index == 3) {  // 第4个参数（索引3）
-//             char* endptr;
-//             long value = std::strtol(param.c_str(), &endptr, 10);
-//             if (endptr != param.c_str()) {  // 转换成功
-//                 param3 = static_cast<int>(value);
-//                 success = true;  // 至少成功获取了第4个参数
-//             }
-//         }
-        
-//         param_index++;
-//         pos = (end_pos < inner.length()) ? end_pos + 1 : inner.length();
-//     }
-    
-//     return std::make_tuple(param2, param3, success);
-// }
 
 void UbShapeInputCheck(const AllocateNode *op) {
   if (op->extents.size() > 3 || op->extents.size() == 0){
@@ -1635,7 +1567,7 @@ void CodeGenTileLangAscendPto::VisitStmt_(const AllocateNode *op) {
         l_data_map_[vid] = l_data;
       }
     }
-    
+
     std::cout<<"visitstmt:"<<std::endl;
     for(auto c:ub_data){
       std::cout<<c<<", ";
