@@ -1055,79 +1055,79 @@ void CodeGenTileLangAscendPto::ScalarOpCodegen(const CallNode *op, const std::st
                   << PrintExpr(op->args[2]) << ");\n";
 }
 
-// std::tuple<int, int, bool> ExtractTemplateParams(const std::string& op_name) {
-//     int param2 = 0;
-//     int param3 = 0;
-//     bool success = false;
+std::tuple<int, int, bool> ExtractTemplateParams(const std::string& op_name) {
+    int param2 = 0;
+    int param3 = 0;
+    bool success = false;
     
-//     // 1. 找到尖括号位置
-//     size_t start = op_name.find('<');
-//     size_t end = op_name.find('>');
+    // 1. 找到尖括号位置
+    size_t start = op_name.find('<');
+    size_t end = op_name.find('>');
     
-//     // 如果没有尖括号，直接返回失败
-//     if (start == std::string::npos || end == std::string::npos || start >= end) {
-//         return std::make_tuple(param2, param3, success);
-//     }
+    // 如果没有尖括号，直接返回失败
+    if (start == std::string::npos || end == std::string::npos || start >= end) {
+        return std::make_tuple(param2, param3, success);
+    }
     
-//     // 2. 提取尖括号内的内容
-//     std::string inner = op_name.substr(start + 1, end - start - 1);
+    // 2. 提取尖括号内的内容
+    std::string inner = op_name.substr(start + 1, end - start - 1);
     
-//     // 3. 解析逗号分隔的参数
-//     int param_index = 0;
-//     size_t pos = 0;
+    // 3. 解析逗号分隔的参数
+    int param_index = 0;
+    size_t pos = 0;
     
-//     while (pos < inner.length()) {
-//         // 跳过空格
-//         while (pos < inner.length() && (inner[pos] == ' ' || inner[pos] == '\t')) {
-//             pos++;
-//         }
+    while (pos < inner.length()) {
+        // 跳过空格
+        while (pos < inner.length() && (inner[pos] == ' ' || inner[pos] == '\t')) {
+            pos++;
+        }
         
-//         if (pos >= inner.length()) break;
+        if (pos >= inner.length()) break;
         
-//         // 找到参数结束位置（逗号或字符串结尾）
-//         size_t end_pos = pos;
-//         while (end_pos < inner.length() && inner[end_pos] != ',') {
-//             end_pos++;
-//         }
+        // 找到参数结束位置（逗号或字符串结尾）
+        size_t end_pos = pos;
+        while (end_pos < inner.length() && inner[end_pos] != ',') {
+            end_pos++;
+        }
         
-//         // 提取当前参数
-//         std::string param = inner.substr(pos, end_pos - pos);
+        // 提取当前参数
+        std::string param = inner.substr(pos, end_pos - pos);
         
-//         // 去除首尾空格
-//         size_t first = param.find_first_not_of(" \t");
-//         size_t last = param.find_last_not_of(" \t");
-//         if (first != std::string::npos && last != std::string::npos) {
-//             param = param.substr(first, last - first + 1);
-//         }
+        // 去除首尾空格
+        size_t first = param.find_first_not_of(" \t");
+        size_t last = param.find_last_not_of(" \t");
+        if (first != std::string::npos && last != std::string::npos) {
+            param = param.substr(first, last - first + 1);
+        }
         
-//         // 根据参数索引处理
-//         if (param_index == 2) {  // 第3个参数（索引2）
-//             char* endptr;
-//             long value = std::strtol(param.c_str(), &endptr, 10);
-//             if (endptr != param.c_str()) {  // 转换成功
-//                 param2 = static_cast<int>(value);
-//             }
-//         } else if (param_index == 3) {  // 第4个参数（索引3）
-//             char* endptr;
-//             long value = std::strtol(param.c_str(), &endptr, 10);
-//             if (endptr != param.c_str()) {  // 转换成功
-//                 param3 = static_cast<int>(value);
-//                 success = true;  // 至少成功获取了第4个参数
-//             }
-//         }
+        // 根据参数索引处理
+        if (param_index == 2) {  // 第3个参数（索引2）
+            char* endptr;
+            long value = std::strtol(param.c_str(), &endptr, 10);
+            if (endptr != param.c_str()) {  // 转换成功
+                param2 = static_cast<int>(value);
+            }
+        } else if (param_index == 3) {  // 第4个参数（索引3）
+            char* endptr;
+            long value = std::strtol(param.c_str(), &endptr, 10);
+            if (endptr != param.c_str()) {  // 转换成功
+                param3 = static_cast<int>(value);
+                success = true;  // 至少成功获取了第4个参数
+            }
+        }
         
-//         param_index++;
-//         pos = (end_pos < inner.length()) ? end_pos + 1 : inner.length();
-//     }
+        param_index++;
+        pos = (end_pos < inner.length()) ? end_pos + 1 : inner.length();
+    }
     
-//     return std::make_tuple(param2, param3, success);
-// }
+    return std::make_tuple(param2, param3, success);
+}
 
 void CodeGenTileLangAscendPto::ReduceOpCodegen(const CallNode *op) {
   std::string op_name = Downcast<StringImm>(op->args[0])->value;
 
   //Determine whether the reduce operation needs to be sliced.
-  auto template_params = extractTemplateParams(op_name);
+  auto template_params = ExtractTemplateParams(op_name);
   int param2_int = std::get<0>(template_params);
   int param3_int = std::get<1>(template_params);
   std::string param2 = std::to_string(param2_int);
