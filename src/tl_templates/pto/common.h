@@ -191,7 +191,8 @@ AICORE PTO_INLINE void copy_ub_to_gm(
 }
 
 template <typename T1, int32_t rows, int32_t cols, int32_t validRow, int32_t validCol>
-AICORE PTO_INLINE void slice_buffer_with_valid() {
+AICORE PTO_INLINE void slice_buffer_with_valid(__ubuf__ *handle) {
     TileUbDataND<T1, rows, cols, validRow, validCol> tileUbWithValid;
+    TASSIGN(tileUbWithValid, handle);
 }
 }

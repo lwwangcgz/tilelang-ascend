@@ -1161,10 +1161,8 @@ void CodeGenTileLangAscendPto::ReduceOpCodegen(const CallNode *op) {
 
   if (param2 != row_src || param3 != col_src) {
     this->PrintIndent();
-    this->stream << kAscendPtoScope << "slice_buffer_with_valid <" << ub_data_type << ", " << row_src << ", " << col_src << ", " << param2 << ", " << param3 << "> ();\n";
+    this->stream << kAscendPtoScope << "slice_buffer_with_valid <" << ub_data_type << ", " << row_src << ", " << col_src << ", " << param2 << ", " << param3 << "> (" << ffts <<");\n";
     var_names[1] = "tileUbWithValid";
-    this->PrintIndent();
-    this->stream << "TASSIGN(tileUbWithValid, " << ffts << ");";
   }
   
   // Determine whether to request the TileUbData with DN arrangement.
