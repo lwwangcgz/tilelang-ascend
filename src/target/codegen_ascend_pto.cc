@@ -1168,7 +1168,7 @@ void CodeGenTileLangAscendPto::ReduceOpCodegen(const CallNode *op) {
       this->PrintIndent();
       this->stream << kAscendPtoScope << "TROWSUM_with_slice_buffer <" << ub_data_type_src << ", "<< ub_data_type << ", " << row_src << ", " << col_src << ", " << param2 << ", " << param3 << ", " << col << "> (" << ffts_src << ", " << ffts << ", " << ub_name <<");\n";
     } else {
-      ICHECK(false) << "Not support reduce type in slice buffer operation."
+      ICHECK(false) << "Not support reduce type in slice buffer operation.";
     }
   } else {
     // Determine whether to request the TileUbData with DN arrangement.
