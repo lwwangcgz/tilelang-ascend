@@ -1139,6 +1139,7 @@ void CodeGenTileLangAscendPto::ReduceOpCodegen(const CallNode *op) {
     auto var_name = PrintBufferOffset(op->args[i].as<CallNode>());
     var_names.push_back(var_name);
   }
+  std::cout<<"reduceOpCodegen:"<<std::endl;
   std::string ub_name = var_names[0];
   std::cout<<ub_name<<std::endl;
   std::vector<std::string> ub_data_vector = ub_data_map_[ub_name];
@@ -1630,11 +1631,16 @@ void CodeGenTileLangAscendPto::VisitStmt_(const AllocateNode *op) {
                 PrimExpr(int(op->ConstantAllocationSize() * op->dtype.bytes())) +
                     address_offset_[String(pos)]);
           }
+        }
+        l_data_map_[vid] = l_data;
       }
-      l_data_map_[vid] = l_data;
     }
-  }
-  
+    
+    std::cout<<"visitstmt:"<<std::endl;
+    for(auto c:ub_data){
+      std::cout<<c<<", ";
+    }
+    std::cout<<std::endl;
   };
 
   if (scope == "wmma.matrix_a") {
