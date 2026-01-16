@@ -1146,9 +1146,15 @@ void CodeGenTileLangAscendPto::ReduceOpCodegen(const CallNode *op) {
   std::string col = ub_data_vector[1];
   std::string ffts = ub_data_vector[3];
 
-  if (param2 != row || param3 != col) {
+  std::string ub_name_src = var_names[1];
+  std::vector<std::string> ub_data_vector_src = ub_data_map_[ub_name_src];
+  std::string row_src = ub_data_vector[1];
+  std::string col_src = ub_data_vector[2];
+  std::string ffts_src = ub_data_vector[3];
+
+  if (param2 != row_src || param3 != col_src) {
     this->PrintIndent();
-    this->stream << kAscendPtoScope << "slice_buffer_with_valid <" << ub_data_type << ", " << row << ", " << col << ", " << param2 << ", " << param3 << "> (" << ffts <<");\n";
+    this->stream << kAscendPtoScope << "slice_buffer_with_valid <" << ub_data_type << ", " << row_src << ", " << col_src << ", " << param2 << ", " << param3 << "> (" << ffts <<");\n";
     var_names[1] = "tileUbWithValid";
   }
   
