@@ -1060,10 +1060,10 @@ void CodeGenTileLangAscendPto::ReduceOpCodegen(const CallNode *op) {
 
   //Determine whether the reduce operation needs to be sliced.
   auto template_params = ExtractTemplateParams(op_name);
-  int param2 = std::get<0>(template_params);
-  int param3 = std::get<1>(template_params);
-  std::string param2 = std::to_string(param2);
-  std::string param3 = std::to_string(param3);
+  int param2_int = std::get<0>(template_params);
+  int param3_int = std::get<1>(template_params);
+  std::string param2 = std::to_string(param2_int);
+  std::string param3 = std::to_string(param3_int);
   bool success = std::get<2>(template_params);
   if (!success) {
     ICHECK(false) << "ExtractTemplateParams failed";
