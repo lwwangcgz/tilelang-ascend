@@ -1140,16 +1140,22 @@ void CodeGenTileLangAscendPto::ReduceOpCodegen(const CallNode *op) {
     var_names.push_back(var_name);
   }
   std::string ub_name = var_names[0];
+  std::cout<<ub_name<<std::endl;
   std::vector<std::string> ub_data_vector = ub_data_map_[ub_name];
   std::string ub_data_type = ub_data_vector[0];
   std::string row = ub_data_vector[2];
+  std::cout<<row<<std::endl;
   std::string col = ub_data_vector[1];
+  std::cout<<col<<std::endl;
   std::string ffts = ub_data_vector[3];
 
   std::string ub_name_src = var_names[1];
+  std::cout<<ub_name_src<<std::endl;
   std::vector<std::string> ub_data_vector_src = ub_data_map_[ub_name_src];
   std::string row_src = ub_data_vector[1];
+  std::cout<<row_src<<std::endl;
   std::string col_src = ub_data_vector[2];
+  std::cout<<col_src<<std::endl;
   std::string ffts_src = ub_data_vector[3];
 
   if (param2 != row_src || param3 != col_src) {
