@@ -1160,15 +1160,22 @@ void CodeGenTileLangAscendPto::ReduceOpCodegen(const CallNode *op) {
   // std::cout<<col_src<<std::endl;
   std::string ffts_src = ub_data_vector_src[3];
 
-  std::string tmp_ub = var_names[3];
+  std::string ub_name_tmp = var_names[3];
+  std::vector<std::string> ub_data_vector_tmp = ub_data_map_[ub_name_tmp];
+  std::string ub_data_type_tmp = ub_data_vector_tmp[0];
+  std::string row_tmp = ub_data_vector_tmp[1];
+  // std::cout<<row_tmp<<std::endl;
+  std::string col_tmp = ub_data_vector_tmp[2];
+  // std::cout<<col_tmp<<std::endl;
+  std::string ffts_tmp = ub_data_vector_tmp[3];
 
   if (param2 != row_src || param3 != col_src) {
     if (op_name == "TROWMAX") {
       this->PrintIndent();
-      this->stream << kAscendPtoScope << "TROWMAX_with_slice_buffer <" << ub_data_type_src << ", "<< ub_data_type << ", " << row_src << ", " << col_src << ", " << param2 << ", " << param3 << ", " << col << "> (" << ffts_src << ", " << ffts << ", " << ub_name << ", " << tmp_ub <<");\n";
+      this->stream << kAscendPtoScope << "TROWMAX_with_slice_buffer <" << ub_data_type_src << ", " << ub_data_type << ", " << ub_data_type_tmp << ", " << row_src << ", " << col_src << ", " << param2 << ", " << param3 << ", " << col << ", " << row_tmp << ", " << col_tmp << "> (" << ffts_src << ", " << ffts << ", " << ub_name << ", " << ub_name_tmp <<");\n";
     } else if (op_name == "TROWSUM") {
       this->PrintIndent();
-      this->stream << kAscendPtoScope << "TROWSUM_with_slice_buffer <" << ub_data_type_src << ", "<< ub_data_type << ", " << row_src << ", " << col_src << ", " << param2 << ", " << param3 << ", " << col << "> (" << ffts_src << ", " << ffts << ", " << ub_name << ", " << tmp_ub <<");\n";
+      this->stream << kAscendPtoScope << "TROWSUM_with_slice_buffer <" << ub_data_type_src << ", " << ub_data_type << ", " << ub_data_type_tmp << ", " << row_src << ", " << col_src << ", " << param2 << ", " << param3 << ", " << col << ", " << row_tmp << ", " << col_tmp << "> (" << ffts_src << ", " << ffts << ", " << ub_name << ", " << ub_name_tmp <<");\n";
     } else {
       ICHECK(false) << "Not support reduce type in slice buffer operation.";
     }
