@@ -191,7 +191,7 @@ AICORE PTO_INLINE void copy_ub_to_gm(
 }
 
 template <typename T1, typename T2, typename T3, int32_t rows_src, int32_t cols_src, int32_t validRow_src, int32_t validCol_src, int32_t cols_dst, int32_t row_tmp, int32_t col_tmp>
-AICORE PTO_INLINE void TROWMAX_with_slice_buffer(uint64_t handle_src, uint64_t handle_dst, TileUbDataND<T2, 1, cols_dst, 1, cols_dst> &ub_DN, TileUbDataND<T3, row_tmp, col_tmp> &tmp_ub) {
+AICORE PTO_INLINE void TROWMAX_with_slice_buffer(uint64_t handle_src, uint64_t handle_dst, TileUbDataND<T2, cols_dst, 1, cols_dst, 1> &ub_DN, TileUbDataND<T3, row_tmp, col_tmp> &tmp_ub) {
     tl::ascend_pto::TileUbDataND <T1, rows_src, cols_src, validRow_src, validCol_src> tileUbWithValid;
     TASSIGN(tileUbWithValid, handle_src);
 //     tl::ascend_pto::TileUbDataDN <T2, cols_dst, 1, cols_dst, 1> ub_DN;
@@ -203,7 +203,7 @@ AICORE PTO_INLINE void TROWMAX_with_slice_buffer(uint64_t handle_src, uint64_t h
 }
 
 template <typename T1, typename T2, typename T3, int32_t rows_src, int32_t cols_src, int32_t validRow_src, int32_t validCol_src, int32_t cols_dst, int32_t row_tmp, int32_t col_tmp>
-AICORE PTO_INLINE void TROWSUM_with_slice_buffer(uint64_t handle_src, uint64_t handle_dst, TileUbDataND<T2, 1, cols_dst, 1, cols_dst> &ub_DN, TileUbDataND<T3, row_tmp, col_tmp> &tmp_ub) {
+AICORE PTO_INLINE void TROWSUM_with_slice_buffer(uint64_t handle_src, uint64_t handle_dst, TileUbDataND<T2, cols_dst, 1, cols_dst, 1> &ub_DN, TileUbDataND<T3, row_tmp, col_tmp> &tmp_ub) {
     tl::ascend_pto::TileUbDataND <T1, rows_src, cols_src, validRow_src, validCol_src> tileUbWithValid;
     TASSIGN(tileUbWithValid, handle_src);
 //     tl::ascend_pto::TileUbDataDN <T2, cols_dst, 1, cols_dst, 1> ub_DN;
