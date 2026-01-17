@@ -1291,6 +1291,7 @@ if (buffer_shapess_.count(op->buffer_var)) {
   
   /// Allocate PTO Tile Memory Address
   auto print_buffer = [&](const std::string &pos) {
+    auto shape = buffer_shapess_[op->buffer_var];
     std::vector<std::string> ub_data(5);
     std::vector<std::string> l_data(3);
     ub_data[0] = type;
