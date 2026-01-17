@@ -1103,8 +1103,6 @@ void CodeGenTileLangAscendPto::ReduceOpCodegen(const CallNode *op) {
   int param3_int = std::get<1>(template_params);
   std::string param2 = std::to_string(param2_int);
   std::string param3 = std::to_string(param3_int);
-  // std::cout<<param2<<std::endl;
-  // std::cout<<param3<<std::endl;
   bool success = std::get<2>(template_params);
   if (!success) {
     ICHECK(false) << "ExtractTemplateParams failed";
@@ -1281,13 +1279,11 @@ void CodeGenTileLangAscendPto::VisitStmt_(const AllocateNode *op) {
   std::string type = getType(op->dtype);
   const VarNode *buffer = op->buffer_var.as<VarNode>();
 
-  // auto buffer_shape = buffer_shapess_[op->buffer_var];
-  // 最简单的打印（但可能不显示具体数值）
-if (buffer_shapess_.count(op->buffer_var)) {
-    std::cout << vid << std::endl;
+  if (buffer_shapess_.count(op->buffer_var)) {
     auto shape = buffer_shapess_[op->buffer_var];
-    std::cout << "Shape: " << shape << std::endl;  // TVM 重载了 << 操作符
-}
+  } else {
+    ICHECK(false) << "Buffer_shape not found.";
+  }
   
   /// Allocate PTO Tile Memory Address
   auto print_buffer = [&](const std::string &pos) {
@@ -1533,8 +1529,6 @@ if (buffer_shapess_.count(op->buffer_var)) {
         } else {
           int8_t bufferNum = shape[0].as<IntImmNode>()->value;
           prefetch_n_stages_map_[vid] = std::pair<int, int> {bufferNum, 0};
-          // for (size_t j = 0; j < bufferNum; j++) {
-          // if (j !=0 ) {this->PrintIndent();}
           int dtype_bytes = op->dtype.bytes();
           std::vector<PrimExpr> valid_shapes;
           valid_shapes.reserve(shape.size()-1);
@@ -1567,12 +1561,6 @@ if (buffer_shapess_.count(op->buffer_var)) {
         l_data_map_[vid] = l_data;
       }
     }
-
-    // std::cout<<"visitstmt:"<<std::endl;
-    for(auto c:ub_data){
-      // std::cout<<c<<", ";
-    }
-    // std::cout<<std::endl;
   };
 
   if (scope == "wmma.matrix_a") {
@@ -1775,7 +1763,6 @@ void CodeGenTileLangAscendPto::AddFunction(const GlobalVar &gvar,
   use_swizzle_ = f->GetAttr<Bool>("use_swizzle").value_or(Bool(false));
   // tiling_map_ = f->GetAttr<Map<Var, PrimExpr>>("tiling_map").value_or(Map<Var, PrimExpr>());
   buffer_shapess_ = f->GetAttr<Map<Var, Array<PrimExpr>>>("buffer_shapess").value_or(Map<Var, Array<PrimExpr>>());
-  std::cout << "buffer_shapess = " << buffer_shapess_ << std::endl;
   var_sequence_ = f->GetAttr<Array<Var>>("var_sequence").value_or(Array<Var>());
   ICHECK(global_symbol.defined())
       << "CodeGenC: Expect PrimFunc to have the global_symbol attribute";
