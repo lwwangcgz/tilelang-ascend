@@ -93,6 +93,8 @@ private:
   void FillCodegen(const CallNode *op);
 
   std::string PrintBufferOffset(const CallNode *op);
+  void UbShapeInputCheck(const AllocateNode *op);
+  bool ValidLayoutEnabled(const AllocateNode *op);
 
   // Whether global barrier is needed.
   bool need_global_barrier_{false};

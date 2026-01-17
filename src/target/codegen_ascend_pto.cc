@@ -1254,14 +1254,14 @@ void CodeGenTileLangAscendPto::VisitStmt_(const AttrStmtNode *op) {
   CodeGenC::VisitStmt_(op);
 }
 
-void UbShapeInputCheck(const AllocateNode *op) {
+void CodeGenTileLangAscendPto::UbShapeInputCheck(const AllocateNode *op) {
   auto shape = buffer_shapess_[op->buffer_var];
   if (shape.size() > 3 || shape.size() == 0){
     ICHECK(false) << "Unsupported ubsize which is expected to be 1, 2 or 3";
   }
 }
 
-bool ValidLayoutEnabled(const AllocateNode *op) {
+bool CodeGenTileLangAscendPto::ValidLayoutEnabled(const AllocateNode *op) {
   auto shape = buffer_shapess_[op->buffer_var];
   bool valid = false;
   std::string type = getType(op->dtype);
