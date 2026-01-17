@@ -1278,6 +1278,13 @@ void CodeGenTileLangAscendPto::VisitStmt_(const AllocateNode *op) {
   std::string scope = GetPtrStorageScope(op->buffer_var);
   std::string type = getType(op->dtype);
   const VarNode *buffer = op->buffer_var.as<VarNode>();
+
+  // auto buffer_shape = buffer_shapess_[op->buffer_var];
+  // 最简单的打印（但可能不显示具体数值）
+if (buffer_shapess_.count(op->buffer_var)) {
+    auto shape = buffer_shapess_[op->buffer_var];
+    std::cout << "Shape: " << shape << std::endl;  // TVM 重载了 << 操作符
+}
   
   /// Allocate PTO Tile Memory Address
   auto print_buffer = [&](const std::string &pos) {
