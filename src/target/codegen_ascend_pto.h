@@ -126,6 +126,7 @@ private:
   std::string vec_id_;
 
   Map<Var, PrimExpr> address_map_;
+  Map<Var, Array<PrimExpr>> buffer_shapess_;
 
   Map<Var, PrimExpr> tiling_map_;
   Array<Var> var_sequence_;
