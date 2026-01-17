@@ -54,6 +54,8 @@ public:
   void UnaryVecOpCodegen(const CallNode *op, const std::string& op_name);
   void ScalarOpCodegen(const CallNode *op, const std::string& op_name);
   void ReduceOpCodegen(const CallNode *op);
+  void UbShapeInputCheck(const AllocateNode *op);
+  bool ValidLayoutEnabled(const AllocateNode *op);
 
   // Override this as a work around for __grid_constant__ parameter
   void AddFunction(const GlobalVar &gvar, const PrimFunc &f);
@@ -93,8 +95,6 @@ private:
   void FillCodegen(const CallNode *op);
 
   std::string PrintBufferOffset(const CallNode *op);
-  void UbShapeInputCheck(const AllocateNode *op);
-  bool ValidLayoutEnabled(const AllocateNode *op);
 
   // Whether global barrier is needed.
   bool need_global_barrier_{false};
