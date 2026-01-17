@@ -1282,6 +1282,7 @@ void CodeGenTileLangAscendPto::VisitStmt_(const AllocateNode *op) {
   // auto buffer_shape = buffer_shapess_[op->buffer_var];
   // 最简单的打印（但可能不显示具体数值）
 if (buffer_shapess_.count(op->buffer_var)) {
+    std::cout << vid << std::endl;
     auto shape = buffer_shapess_[op->buffer_var];
     std::cout << "Shape: " << shape << std::endl;  // TVM 重载了 << 操作符
 }
