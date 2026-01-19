@@ -31,7 +31,6 @@ template <typename T, int Rows, int Cols, int RowValid = Rows, int ColValid = Co
 using TileUbDataDN = Tile<TileType::Vec, T, Rows, Cols,
                        BLayout::ColMajor,
                        RowValid, ColValid>;
-                       
 
 template <typename T, int32_t shape>
 AICORE PTO_INLINE void pto_mov_tile(int32_t src_addr, 
