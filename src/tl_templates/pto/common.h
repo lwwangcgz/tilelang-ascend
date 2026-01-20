@@ -264,7 +264,7 @@ template <typename T1, typename T2, typename T3,
 AICORE PTO_INLINE void TROWMAX_with_slice_buffer(
         uint64_t handle_src, 
         uint64_t handle_dst, 
-        TileUbDataDN<T2, cols_dst, 1, cols_dst, 1> ub_DN, 
+        TileUbDataDN<T2, cols_dst, 1, rows_src, 1> ub_DN, 
         TileUbDataND<T3, row_tmp, col_tmp> tmp_ub) {
     tl::ascend_pto::TileUbDataND <T1, rows_src, cols_src, validRow_src, validCol_src> tileUbWithValid;
     TASSIGN(tileUbWithValid, handle_src);
